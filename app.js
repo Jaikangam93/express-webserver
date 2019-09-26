@@ -1,45 +1,56 @@
-// const http = require('http');
-//
-// const hostname = '127.0.0.1';
-// const port = 3000;
-//
-// const server = http.createServer((req, res) => {
-//   res.statusCode = 200;
-//   res.setHeader('Content-Type', 'text/plain');
-//   res.end('Hello World\n');
-// });
-//
-// server.listen(port, hostname, () => {
-//   console.log(`Server running at http://${hostname}:${port}/`);
-// });
-
-// Above code is how the node server is
-//*************************
-//Below will be start using express
-//*************************
-
-//get the express from the node module
 const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
 
-//express assign to  app
 const app = express();
 
-//route
-app.get('/', function(req, res){
-  res.send('Hello Angam');
+//Middleware from bodyParser by default
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+
+//Set static path
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/users', (req,res)=> {
+  let users = [
+    {
+      first_name: "John",
+      last_name: "Doe",
+      age: 34,
+      gender: "male"
+    },
+    {
+      first_name: "Angam",
+      last_name: "Malangmei",
+      age: 26,
+      gender: "male"
+    },
+    {
+      first_name: "Philip",
+      last_name: "Malangmei",
+      age: 30,
+      gender: "male"
+    },
+  ];
+  res.json(users);
 });
 
-app.get('/contactus', function(req, res){
-  res.send('<h1> contactus page </h1>');
-});
-//Dynamic route
-app.get('/user/:name', function(req, res){
-  let user = req.params.name;
-  res.send('<h1> User name from the Dynamic route is :' + user+ '</h1>');
+app.get('/download', (req, res) => {
+  res.download(path.join(__dirname, 'download/Node.pdf'));
 });
 
-
-//localhost running or started
-app.listen(3000, function(){
-  console.log('server started on port 3000...')
+app.get('/redirected',(req, res)=>{
+  res.redirect('/about.html');
 });
+
+//post route to save
+app.post('/subscribe', (req, res)=> {
+  let name = req.body.name;
+  let email = req.body.email;
+
+  console.log(name+' has subscribe with ' + email);
+});
+
+app.listen(3000, () => {
+  console.log('Server started at port 3000...');
+})
